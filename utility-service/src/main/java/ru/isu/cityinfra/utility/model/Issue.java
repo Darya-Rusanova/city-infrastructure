@@ -1,9 +1,7 @@
 package ru.isu.cityinfra.utility.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import ru.isu.cityinfra.utility.enums.IssueCategory;
 import ru.isu.cityinfra.utility.enums.IssueStatus;
 
@@ -18,6 +16,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class Issue {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,5 +34,5 @@ public class Issue {
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
     @Column(name = "updated_at")
-    private LocalDateTime updated_at;
+    private LocalDateTime updatedAt;
 }
