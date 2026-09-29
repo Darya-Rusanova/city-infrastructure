@@ -1,0 +1,83 @@
+package ru.isu.cityinfra.utility.service;
+
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import ru.isu.cityinfra.utility.client.NotificationClient;
+import ru.isu.cityinfra.utility.dto.IssueRequestDto;
+import ru.isu.cityinfra.utility.dto.IssueResponseDto;
+import ru.isu.cityinfra.utility.enums.IssueStatus;
+import ru.isu.cityinfra.utility.model.Issue;
+import ru.isu.cityinfra.utility.repository.IssueRepository;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+@Slf4j
+public class IssueService {
+    @Autowired
+    private IssueRepository issueRepository;
+    @Autowired
+    private NotificationClient notification;
+
+    @Transactional
+    public IssueResponseDto createIssue(IssueRequestDto request, Integer userId){
+        Issue issue= Issue.builder()
+                .userId(userId)
+                .category(request.getCategory())
+                .address(request.getAddress())
+                .description(request.getDescription())
+                .status(IssueStatus.NEW)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        Issue saved = issueRepository.save(issue);
+        notification.send(userId,"Заявка создана", "Ваша заявка №"+ saved.getId()+" была успешно создана и принята в обработку");
+        log.info("Создана заявка №{}",saved.getId());
+        return toDto(saved);
+    }
+
+
+    public List<IssueResponseDto> getAllIssues(Integer userId){
+        List<Issue> issues = issueRepository.findAllByUserId(userId);
+        return issues.stream().map(this::toDto).toList();
+    }
+    @Transactional
+    public IssueResponseDto updateIssueStatus(Integer id, IssueStatus newStatus,Integer userId){
+        log.info("Обновление заявки пользователем {}",userId);
+        Issue issue = issueRepository.findById(id).orElse(null);
+        if (issue != null) {
+            IssueStatus old = issue.getStatus();
+            issue.setStatus(newStatus);
+            issue.setUpdatedAt(LocalDateTime.now());
+            Issue saved = issueRepository.save(issue);
+            log.info("Статус заявки №{} сменился с {} на {}",
+                    id,old.getDisplayName(),saved.getStatus().getDisplayName());
+            notification.send(issue.getUserId(),"Статус заявки был изменен",
+                    "Статус вашей заявки №"+id+ "был изменен на " + saved.getStatus().getDisplayName());
+            return toDto(saved);
+        }
+        return new IssueResponseDto();
+    }
+
+    private IssueResponseDto toDto(Issue saved){
+        IssueResponseDto response = IssueResponseDto.builder()
+                .id(saved.getId())
+                .userId(saved.getUserId())
+                .category(saved.getCategory())
+                .nameCategory(saved.getCategory().getDisplayName())
+                .address(saved.getAddress())
+                .status(saved.getStatus())
+                .nameStatus(saved.getStatus().getDisplayName())
+                .description(saved.getDescription())
+                .createdAt(saved.getCreatedAt())
+                .updatedAt(saved.getUpdatedAt())
+                .build();
+        return response;
+    }
+}
