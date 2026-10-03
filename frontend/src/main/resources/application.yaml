@@ -1,0 +1,31 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: frontend
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+
+services:
+  auth:
+    url: ${AUTH_SERVICE_URL:http://auth-service:8080}
+  transport:
+    url: ${TRANSPORT_SERVICE_URL:http://transport-service:8080}
+  utility:
+    url: ${UTILITY_SERVICE_URL:http://utility-service:8080}
+  environment:
+    url: ${ENVIRONMENT_SERVICE_URL:http://environment-service:8080}
+  billing:
+    url: ${BILLING_SERVICE_URL:http://billing-service:8080}
+  notification:
+    url: ${NOTIFICATION_SERVICE_URL:http://notification-service:8080}
+
+logging:
+  level:
+    ru.isu.cityinfra: DEBUG
+    org.springframework.web: INFO
