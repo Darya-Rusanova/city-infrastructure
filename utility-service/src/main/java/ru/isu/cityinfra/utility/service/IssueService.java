@@ -6,10 +6,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.domain.Sort;
 import ru.isu.cityinfra.utility.client.NotificationClient;
 import ru.isu.cityinfra.utility.dto.IssueRequestDto;
 import ru.isu.cityinfra.utility.dto.IssueResponseDto;
+import ru.isu.cityinfra.utility.enums.IssueCategory;
 import ru.isu.cityinfra.utility.enums.IssueStatus;
+import ru.isu.cityinfra.utility.exception.ConflictException;
+import ru.isu.cityinfra.utility.exception.NotFoundException;
 import ru.isu.cityinfra.utility.model.Issue;
 import ru.isu.cityinfra.utility.repository.IssueRepository;
 
@@ -43,16 +48,32 @@ public class IssueService {
     }
 
 
-    public List<IssueResponseDto> getAllIssues(Integer userId){
-        List<Issue> issues = issueRepository.findAllByUserId(userId);
+    public List<IssueResponseDto> getAllIssues(Integer userId, IssueStatus status, IssueCategory type, String sortBy, String dir){
+        Specification<Issue> spec = (root, query, cb) -> cb.conjunction();
+        spec = spec.and((root, query, cb) -> cb.equal(root.get("userId"), userId));
+        if (type != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("category"), type));
+        }
+        if (status != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), status));
+        }
+        Sort sort = dir.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+
+        List<Issue> issues = issueRepository.findAll(spec, sort);
+
         return issues.stream().map(this::toDto).toList();
     }
+
     @Transactional
     public IssueResponseDto updateIssueStatus(Integer id, IssueStatus newStatus,Integer userId){
         log.info("Обновление заявки пользователем {}",userId);
         Issue issue = issueRepository.findById(id).orElse(null);
         if (issue != null) {
             IssueStatus old = issue.getStatus();
+            if(old.equals(IssueStatus.RESOLVED)){
+                log.error("Ошибка: статус обновляемой заявки уже решен");
+                throw new ConflictException("Нельзя сменить статус решенной заявки");
+            }
             issue.setStatus(newStatus);
             issue.setUpdatedAt(LocalDateTime.now());
             Issue saved = issueRepository.save(issue);
@@ -62,7 +83,10 @@ public class IssueService {
                     "Статус вашей заявки №"+id+ "был изменен на " + saved.getStatus().getDisplayName());
             return toDto(saved);
         }
-        return new IssueResponseDto();
+        else{
+            log.error("Ошибка: заявка с id={} не найдена",id);
+            throw new NotFoundException("Заявка с id="+id+" не найдена");
+        }
     }
 
     private IssueResponseDto toDto(Issue saved){

@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.isu.cityinfra.utility.dto.IssueRequestDto;
 import ru.isu.cityinfra.utility.dto.IssueResponseDto;
 import ru.isu.cityinfra.utility.dto.IssueStatusUpdateDto;
+import ru.isu.cityinfra.utility.enums.IssueCategory;
+import ru.isu.cityinfra.utility.enums.IssueStatus;
 import ru.isu.cityinfra.utility.service.IssueService;
 
 import java.util.List;
@@ -26,9 +28,13 @@ public class IssueController {
     }
 
     @GetMapping
-    public ResponseEntity<List<IssueResponseDto>> getAllIssues(Authentication authentication){
+    public ResponseEntity<List<IssueResponseDto>> getAllIssues(Authentication authentication,
+                                                               @RequestParam(required = false) IssueStatus status,
+                                                               @RequestParam(required = false) IssueCategory type,
+                                                               @RequestParam(defaultValue = "id") String sortBy,
+                                                               @RequestParam(defaultValue = "asc") String dir){
         Integer userId = Integer.parseInt(authentication.getName());
-        List<IssueResponseDto> issues = issueService.getAllIssues(userId);
+        List<IssueResponseDto> issues = issueService.getAllIssues(userId,status,type,sortBy,dir);
         return ResponseEntity.ok(issues);
     }
 
