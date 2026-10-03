@@ -1,11 +1,23 @@
 package ru.isu.cityinfra.notification.model;
 
-import jakarta.persistence.*;
-import lombok.*;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ru.isu.cityinfra.notification.enums.NotificationChannel;
 import ru.isu.cityinfra.notification.enums.NotificationStatus;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "notifications", indexes = {
@@ -26,6 +38,7 @@ public class Notification {
     private Integer userId;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private NotificationChannel channel = NotificationChannel.IN_APP;
 
     @Column(nullable = false)
@@ -35,8 +48,10 @@ public class Notification {
     private String message;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private NotificationStatus status = NotificationStatus.SENT;
 
     @Column(name = "created_at")
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 }
