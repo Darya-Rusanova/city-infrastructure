@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Vehicles {
+public class Vehicle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -28,5 +28,5 @@ public class Vehicles {
     @Column(nullable = false)
     private  double longitude;
     @Column(name = "update_at")
-    private LocalDateTime updateAt = LocalDateTime.now();
+    private LocalDateTime updatedAt = LocalDateTime.now();
 }
