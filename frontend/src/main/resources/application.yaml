@@ -11,6 +11,9 @@ spring:
     mode: HTML
     encoding: UTF-8
 
+jwt:
+  secret: ${JWT_SECRET}
+
 services:
   auth:
     url: ${AUTH_SERVICE_URL:http://auth-service:8080}

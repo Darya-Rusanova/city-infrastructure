@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Заявки ЖКХ')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: nav}"></div>
+
+<main class="container">
+    <div class="page-header">
+        <h1>Заявки ЖКХ</h1>
+        <a th:href="@{/issues/new}" class="btn-primary">+ Новая заявка</a>
+    </div>
+
+    <p class="error" th:if="${error}" th:text="${error}"></p>
+
+    <table class="data-table" th:if="${!issues.isEmpty()}">
+        <thead>
+        <tr>
+            <th>№</th>
+            <th>Категория</th>
+            <th>Адрес</th>
+            <th>Описание</th>
+            <th>Статус</th>
+            <th>Создана</th>
+            <th th:if="${role == 'ADMIN'}">Действие</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="issue : ${issues}">
+            <td th:text="${issue.id}">1</td>
+            <td th:text="${issue.nameCategory}">Водоснабжение</td>
+            <td th:text="${issue.address}">ул. Ленина, 15</td>
+            <td th:text="${issue.description}">Описание</td>
+            <td>
+                <span class="status-badge" th:text="${issue.nameStatus}">Новая</span>
+            </td>
+            <td th:text="${#temporals.format(issue.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2026</td>
+            <td th:if="${role == 'ADMIN'}">
+                <form th:action="@{/issues/{id}/status(id=${issue.id})}" method="post" class="inline-form">
+                    <select name="status">
+                        <option th:each="s : ${statuses}"
+                                th:value="${s}"
+                                th:text="${s}"
+                                th:selected="${s == issue.status}"></option>
+                    </select>
+                    <button type="submit" class="btn-small">Сохранить</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p th:if="${issues.isEmpty()}" class="empty-state">Заявок пока нет.</p>
+</main>
+</body>
+</html>

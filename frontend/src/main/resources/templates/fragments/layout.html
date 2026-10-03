@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <title th:text="${title} + ' — City Infrastructure'">City Infrastructure</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header th:fragment="nav" class="site-header">
+    <div class="container header-inner">
+        <a th:href="@{/}" class="logo">City Infrastructure</a>
+        <nav>
+            <a th:href="@{/issues}">Заявки ЖКХ</a>
+        </nav>
+        <div class="user-box" th:if="${session.username} != null">
+            <span th:text="${session.username}">Пользователь</span>
+            <span class="role-badge" th:text="${session.role}">USER</span>
+            <a th:href="@{/logout}" class="btn-link">Выйти</a>
+        </div>
+        <div class="user-box" th:unless="${session.username} != null">
+            <a th:href="@{/login}" class="btn-link">Войти</a>
+        </div>
+    </div>
+</header>
+</body>
+</html>
