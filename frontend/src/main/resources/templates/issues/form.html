@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Новая заявка')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: nav}"></div>
+
+<main class="container form-page">
+    <h1>Новая заявка</h1>
+
+    <p class="error" th:if="${error}" th:text="${error}"></p>
+
+    <form th:action="@{/issues}" th:object="${issueRequest}" method="post" class="form">
+        <label for="category">Категория</label>
+        <select id="category" th:field="*{category}">
+            <option th:each="c : ${categories}" th:value="${c}" th:text="${c}"></option>
+        </select>
+
+        <label for="address">Адрес</label>
+        <input type="text" id="address" th:field="*{address}" required placeholder="ул. Ленина, 15">
+
+        <label for="description">Описание проблемы</label>
+        <textarea id="description" th:field="*{description}" required rows="4"
+                  placeholder="Опишите, что произошло"></textarea>
+
+        <button type="submit" class="btn-primary">Отправить заявку</button>
+        <a th:href="@{/issues}" class="btn-link">Отмена</a>
+    </form>
+</main>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Вход')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: nav}"></div>
+
+<main class="container form-page">
+    <h1>Вход</h1>
+    <p class="hint">
+        Раздел временный: пока Identity &amp; Auth Service не реализован,
+        вход выполняется без пароля — укажите имя и роль для тестирования.
+    </p>
+
+    <p class="error" th:if="${error}" th:text="${error}"></p>
+
+    <form th:action="@{/login}" method="post" class="form">
+        <label for="username">Имя пользователя</label>
+        <input type="text" id="username" name="username" required placeholder="ivanov_i">
+
+        <label for="role">Роль</label>
+        <select id="role" name="role">
+            <option value="USER">USER — житель</option>
+            <option value="ADMIN">ADMIN — сотрудник</option>
+        </select>
+
+        <button type="submit" class="btn-primary">Войти</button>
+    </form>
+</main>
+</body>
+</html>
