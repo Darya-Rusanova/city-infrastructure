@@ -13,6 +13,7 @@ import ru.isu.cityinfra.utility.dto.IssueRequestDto;
 import ru.isu.cityinfra.utility.dto.IssueResponseDto;
 import ru.isu.cityinfra.utility.enums.IssueCategory;
 import ru.isu.cityinfra.utility.enums.IssueStatus;
+import ru.isu.cityinfra.utility.exception.BadRequestException;
 import ru.isu.cityinfra.utility.exception.ConflictException;
 import ru.isu.cityinfra.utility.exception.NotFoundException;
 import ru.isu.cityinfra.utility.model.Issue;
@@ -28,6 +29,17 @@ public class IssueService {
     private IssueRepository issueRepository;
     @Autowired
     private NotificationClient notification;
+    private static final List<String> SORT_FIELDS =
+            List.of("id", "createdAt", "updatedAt", "status", "category");
+    private Sort buildSort(String sortBy, String dir) {
+        if (!SORT_FIELDS.contains(sortBy)) {
+            throw new BadRequestException("Недопустимое поле сортировки: " + sortBy + ". Допустимые: " + SORT_FIELDS);
+        }
+        if (!"asc".equalsIgnoreCase(dir) && !"desc".equalsIgnoreCase(dir)) {
+            throw new BadRequestException("Направление сортировки должно быть asc или desc");
+        }
+        return Sort.by(Sort.Direction.fromString(dir), sortBy);
+    }
 
     @Transactional
     public IssueResponseDto createIssue(IssueRequestDto request, Integer userId){
@@ -48,16 +60,17 @@ public class IssueService {
     }
 
 
-    public List<IssueResponseDto> getAllIssues(Integer userId, IssueStatus status, IssueCategory type, String sortBy, String dir){
+    public List<IssueResponseDto> getAllIssues(Integer userId, IssueStatus status, IssueCategory type, String sortBy, String dir, boolean isAdmin){
         Specification<Issue> spec = (root, query, cb) -> cb.conjunction();
-        spec = spec.and((root, query, cb) -> cb.equal(root.get("userId"), userId));
+        if(!isAdmin)
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("userId"), userId));
         if (type != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("category"), type));
         }
         if (status != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), status));
         }
-        Sort sort = dir.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Sort sort = buildSort(sortBy, dir);
 
         List<Issue> issues = issueRepository.findAll(spec, sort);
 
@@ -80,7 +93,7 @@ public class IssueService {
             log.info("Статус заявки №{} сменился с {} на {}",
                     id,old.getDisplayName(),saved.getStatus().getDisplayName());
             notification.send(issue.getUserId(),"Статус заявки был изменен",
-                    "Статус вашей заявки №"+id+ "был изменен на " + saved.getStatus().getDisplayName());
+                    "Статус вашей заявки №"+id+ " был изменен на " + saved.getStatus().getDisplayName());
             return toDto(saved);
         }
         else{

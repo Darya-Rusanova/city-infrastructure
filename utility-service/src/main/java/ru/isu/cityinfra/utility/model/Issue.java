@@ -29,7 +29,7 @@ public class Issue {
     private String address;
     @Enumerated(EnumType.STRING)
     private IssueStatus status = IssueStatus.NEW;
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
