@@ -11,7 +11,6 @@ import ru.isu.cityinfra.utility.dto.NotificationRequestDto;
 @Component
 @Slf4j
 public class NotificationClient {
-    private static final Logger log = LoggerFactory.getLogger(NotificationClient.class);
     final RestTemplate restTemplate;
     final String notificationUrl;
 
