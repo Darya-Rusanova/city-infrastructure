@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.isu.cityinfra.transport.enums.SensorStatus;
-import ru.isu.cityinfra.transport.enums.SensorType;
+import ru.isu.cityinfra.environment.enums.SensorStatus;
+import ru.isu.cityinfra.environment.enums.SensorType;
 
 @Entity
 @Table(name = "sensors", indexes = {
@@ -22,13 +22,13 @@ public class Sensor {
     @Column(nullable = false, length = 100)
     private String name;
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30)
     private SensorType type;
     @Column(nullable = false)
     private double latitude;
     @Column(nullable = false)
     private double longitude;
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private SensorStatus status = SensorStatus.ACTIVE;
 }

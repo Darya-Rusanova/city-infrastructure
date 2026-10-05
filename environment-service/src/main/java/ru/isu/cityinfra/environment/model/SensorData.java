@@ -19,13 +19,12 @@ public class SensorData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(name = "sensor_id", nullable = false)
+    private Integer sensorId;
     @Column(nullable = false)
-    private double value;
+    private Double value;
     @Column(length = 20)
     private String unit;
     @Column(name = "recorded_at")
     private LocalDateTime recordedAt = LocalDateTime.now();
-    @ManyToOne()
-    @JoinColumn(name = "sensor_id", nullable = false)
-    private Sensor sensor;
 }
