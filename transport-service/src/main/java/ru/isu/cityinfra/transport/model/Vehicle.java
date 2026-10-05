@@ -27,6 +27,6 @@ public class Vehicle {
     private double latitude;
     @Column(nullable = false)
     private  double longitude;
-    @Column(name = "update_at")
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
 }
