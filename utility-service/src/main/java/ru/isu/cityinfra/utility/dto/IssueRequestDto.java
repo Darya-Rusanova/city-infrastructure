@@ -15,6 +15,7 @@ public class IssueRequestDto {
     private IssueCategory category;
 
     @NotNull(message = "Опишите проблему")
+    @Size(max=2000,message="Описание слишком длинное")
     private String description;
 
     @NotNull(message = "Укажите адрес")
