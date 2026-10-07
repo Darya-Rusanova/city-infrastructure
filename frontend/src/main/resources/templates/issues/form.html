@@ -12,7 +12,7 @@
     <form th:action="@{/issues}" th:object="${issueRequest}" method="post" class="form">
         <label for="category">Категория</label>
         <select id="category" th:field="*{category}">
-            <option th:each="c : ${categories}" th:value="${c}" th:text="${c}"></option>
+            <option th:each="c : ${categories}" th:value="${c}" th:text="${c.displayName}"></option>
         </select>
 
         <label for="address">Адрес</label>
