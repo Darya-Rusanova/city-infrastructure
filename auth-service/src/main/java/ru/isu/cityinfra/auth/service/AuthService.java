@@ -10,7 +10,6 @@ import ru.isu.cityinfra.auth.exception.ConflictException;
 import ru.isu.cityinfra.auth.exception.UnauthorizedException;
 import ru.isu.cityinfra.auth.model.User;
 import ru.isu.cityinfra.auth.repository.UserRepository;
-import ru.isu.cityinfra.auth.security.JwtService;
 
 @Slf4j
 @Service
