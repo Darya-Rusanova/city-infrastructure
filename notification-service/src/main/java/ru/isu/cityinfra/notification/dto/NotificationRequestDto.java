@@ -2,6 +2,7 @@ package ru.isu.cityinfra.notification.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Getter
@@ -17,8 +18,10 @@ public class NotificationRequestDto {
     private String channel;
 
     @NotBlank(message = "Укажите заголовок")
+    @Size(max = 150, message = "Заголовок слишком длинный")
     private String title;
 
     @NotBlank(message = "Укажите текст сообщения")
+    @Size(max = 2000, message = "Сообщение слишком длинное")
     private String message;
 }

@@ -3,6 +3,7 @@ package ru.isu.cityinfra.notification.service;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.isu.cityinfra.notification.dto.NotificationRequestDto;
 import ru.isu.cityinfra.notification.dto.NotificationResponseDto;
@@ -11,9 +12,13 @@ import ru.isu.cityinfra.notification.enums.NotificationStatus;
 import ru.isu.cityinfra.notification.model.Notification;
 import ru.isu.cityinfra.notification.repository.NotificationRepository;
 
+import java.util.List;
+
 @Service
 @Slf4j
 public class NotificationService {
+    private static final int MY_NOTIFICATIONS_LIMIT = 50;
+
     @Autowired
     private NotificationRepository notificationRepository;
 
@@ -39,6 +44,13 @@ public class NotificationService {
         Notification saved = notificationRepository.save(notification);
         log.info("Уведомление отправлено пользователю {}", saved.getUserId());
         return toDto(saved);
+    }
+
+    public List<NotificationResponseDto> getMy(Integer userId) {
+        List<Notification> notifications = notificationRepository.findByUserIdOrderByCreatedAtDesc(
+                userId, PageRequest.of(0, MY_NOTIFICATIONS_LIMIT));
+        log.info("Запрос уведомлений пользователем {}: {} шт.", userId, notifications.size());
+        return notifications.stream().map(this::toDto).toList();
     }
 
     private NotificationResponseDto toDto(Notification n) {
