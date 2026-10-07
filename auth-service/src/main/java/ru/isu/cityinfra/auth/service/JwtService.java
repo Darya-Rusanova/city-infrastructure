@@ -1,4 +1,4 @@
-package ru.isu.cityinfra.auth.security;
+package ru.isu.cityinfra.auth.service;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
