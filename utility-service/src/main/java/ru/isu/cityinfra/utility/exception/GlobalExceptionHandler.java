@@ -48,4 +48,15 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<Map<String, Object>> handleBadRequest(BadRequestException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                "timestamp", LocalDateTime.now().toString(),
+                "status", 400,
+                "error", "BAD_REQUEST",
+                "message", e.getMessage()
+        ));
+    }
+
 }

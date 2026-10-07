@@ -11,7 +11,6 @@ import ru.isu.cityinfra.utility.dto.NotificationRequestDto;
 @Component
 @Slf4j
 public class NotificationClient {
-    private static final Logger log = LoggerFactory.getLogger(NotificationClient.class);
     final RestTemplate restTemplate;
     final String notificationUrl;
 
@@ -24,7 +23,7 @@ public class NotificationClient {
     public void send(Integer userId, String title, String message){
         try {
             NotificationRequestDto request = new NotificationRequestDto(userId, "IN_APP", title, message);
-            restTemplate.postForEntity(notificationUrl,request,Void.class);
+            restTemplate.postForEntity(notificationUrl+"/notifications",request,Void.class);
             log.info("сообщение отправлено пользователю {}",userId);
         } catch (Exception e) {
             log.error("сообщение не было отправлено пользователю {}: {}",userId,e.getMessage());

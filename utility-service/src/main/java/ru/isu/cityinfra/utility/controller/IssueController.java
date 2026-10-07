@@ -34,7 +34,8 @@ public class IssueController {
                                                                @RequestParam(defaultValue = "id") String sortBy,
                                                                @RequestParam(defaultValue = "asc") String dir){
         Integer userId = Integer.parseInt(authentication.getName());
-        List<IssueResponseDto> issues = issueService.getAllIssues(userId,status,type,sortBy,dir);
+        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        List<IssueResponseDto> issues = issueService.getAllIssues(userId,status,type,sortBy,dir,isAdmin);
         return ResponseEntity.ok(issues);
     }
 
