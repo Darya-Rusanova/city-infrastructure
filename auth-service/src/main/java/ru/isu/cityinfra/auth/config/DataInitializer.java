@@ -49,6 +49,6 @@ public class DataInitializer implements CommandLineRunner {
                 .role(Role.USER)
                 .build());
 
-        log.info("Созданы демо-пользователи: admin/admin123, user1/user123, user2/user123");
+//        log.info("Созданы демо-пользователи: admin/admin123, user1/user123, user2/user123");
     }
 }
