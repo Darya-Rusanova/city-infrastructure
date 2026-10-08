@@ -18,6 +18,8 @@ import ru.isu.cityinfra.utility.exception.ConflictException;
 import ru.isu.cityinfra.utility.exception.NotFoundException;
 import ru.isu.cityinfra.utility.model.Issue;
 import ru.isu.cityinfra.utility.repository.IssueRepository;
+import org.springframework.context.ApplicationEventPublisher;
+import ru.isu.cityinfra.utility.event.IssueNotificationEvent;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,7 +30,8 @@ public class IssueService {
     @Autowired
     private IssueRepository issueRepository;
     @Autowired
-    private NotificationClient notification;
+    private ApplicationEventPublisher events;
+
     private static final List<String> SORT_FIELDS =
             List.of("id", "createdAt", "updatedAt", "status", "category");
     private Sort buildSort(String sortBy, String dir) {
@@ -54,7 +57,9 @@ public class IssueService {
                 .build();
 
         Issue saved = issueRepository.save(issue);
-        notification.send(userId,"Заявка создана", "Ваша заявка №"+ saved.getId()+" была успешно создана и принята в обработку");
+        events.publishEvent(new IssueNotificationEvent(userId,
+                "Заявка создана",
+                "Ваша заявка №"+ saved.getId()+" была успешно создана и принята в обработку"));
         log.info("Создана заявка №{}",saved.getId());
         return toDto(saved);
     }
@@ -92,8 +97,9 @@ public class IssueService {
             Issue saved = issueRepository.save(issue);
             log.info("Статус заявки №{} сменился с {} на {}",
                     id,old.getDisplayName(),saved.getStatus().getDisplayName());
-            notification.send(issue.getUserId(),"Статус заявки был изменен",
-                    "Статус вашей заявки №"+id+ " был изменен на " + saved.getStatus().getDisplayName());
+            events.publishEvent(new IssueNotificationEvent(issue.getUserId(),
+                    "Статус заявки был изменен",
+                    "Статус вашей заявки №"+id+ " был изменен на " + saved.getStatus().getDisplayName()));
             return toDto(saved);
         }
         else{
