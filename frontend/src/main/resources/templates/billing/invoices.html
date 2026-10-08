@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Счета')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="page-head">
+        <div>
+            <h1>Счета и оплата</h1>
+            <p class="muted" th:if="${admin}">Просмотр счетов пользователя № <span th:text="${targetUser}">1</span></p>
+            <p class="muted" th:unless="${admin}">Ваши начисления за городские услуги.</p>
+        </div>
+        <div class="debt card">
+            <span class="stat-label">К оплате</span>
+            <span class="stat-value"><span th:text="${#numbers.formatDecimal(debt, 1, 'WHITESPACE', 2, 'COMMA')}">0,00</span> &#8381;</span>
+        </div>
+    </div>
+
+    <form class="filters card" method="get" th:action="@{/billing}">
+        <input type="number" name="userId" min="1" placeholder="Номер пользователя" th:if="${admin}" th:value="${targetUser}">
+        <select name="status" aria-label="Статус">
+            <option value="">Все статусы</option>
+            <option th:each="o : ${invoiceStatuses}" th:value="${o.key}" th:text="${o.value}" th:selected="${o.key == selectedStatus}"></option>
+        </select>
+        <button class="btn btn-ghost" type="submit">Применить</button>
+        <a class="btn btn-link" th:href="@{/billing}">Сбросить</a>
+    </form>
+
+    <div class="card" th:unless="${#lists.isEmpty(invoices)}">
+        <div class="table-wrap">
+            <table class="table">
+                <thead><tr><th>№</th><th>Описание</th><th>Сумма</th><th>Оплатить до</th><th>Статус</th><th>Действие</th></tr></thead>
+                <tbody>
+                <tr th:each="inv : ${invoices}">
+                    <td th:text="${inv.id}">1</td>
+                    <td th:text="${inv.description}">Содержание жилья</td>
+                    <td class="nowrap"><span th:text="${#numbers.formatDecimal(inv.amount, 1, 'WHITESPACE', 2, 'COMMA')}">1 500,00</span> &#8381;</td>
+                    <td th:text="${#temporals.format(inv.dueDate, 'dd.MM.yyyy')}">01.01.2026</td>
+                    <td><span class="badge" th:classappend="'badge-' + ${inv.status.toLowerCase()}" th:text="${inv.nameStatus}">Не оплачен</span></td>
+                    <td>
+                        <form th:if="${inv.status != 'PAID' and not pending.containsKey(inv.id)}" th:action="@{/billing/pay}" method="post">
+                            <input type="hidden" name="invoiceId" th:value="${inv.id}">
+                            <input type="hidden" name="amount" th:value="${inv.amount}">
+                            <input type="hidden" name="userId" th:if="${admin}" th:value="${targetUser}">
+                            <button class="btn btn-primary btn-sm" type="submit">Оплатить</button>
+                        </form>
+                        <form th:if="${pending.containsKey(inv.id)}" th:action="@{/billing/confirm}" method="post">
+                            <input type="hidden" name="invoiceId" th:value="${inv.id}">
+                            <input type="hidden" name="userId" th:if="${admin}" th:value="${targetUser}">
+                            <button class="btn btn-warning btn-sm" type="submit" title="Имитация ответа платежной системы">Подтвердить оплату (демо)</button>
+                        </form>
+                        <span class="muted" th:if="${inv.status == 'PAID'}">Оплачено</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card empty" th:if="${#lists.isEmpty(invoices)}"><p>Счетов не найдено.</p></div>
+
+    <p class="note">Кнопка "Подтвердить оплату" имитирует ответ платежной системы. В реальном сервисе ее вызывает платежный провайдер.</p>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/app.js(v=2)}"></script>
+</body>
+</html>

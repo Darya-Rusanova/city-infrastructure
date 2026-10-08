@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Уведомления')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container narrow">
+    <div class="page-head">
+        <div><h1>Уведомления</h1><p class="muted">Последние сообщения от городских сервисов.</p></div>
+    </div>
+
+    <div class="notice-list" th:unless="${#lists.isEmpty(notifications)}">
+        <div class="card notice" th:each="n : ${notifications}">
+            <div class="card-top">
+                <h3 th:text="${n.title}">Заголовок</h3>
+                <span class="muted small" th:text="${#temporals.format(n.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2026 12:00</span>
+            </div>
+            <p th:text="${n.message}">Текст уведомления</p>
+            <span class="badge badge-sent" th:text="${n.nameChannel}">В приложении</span>
+        </div>
+    </div>
+    <div class="card empty" th:if="${#lists.isEmpty(notifications)}"><p>Уведомлений пока нет.</p></div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/app.js(v=2)}"></script>
+</body>
+</html>

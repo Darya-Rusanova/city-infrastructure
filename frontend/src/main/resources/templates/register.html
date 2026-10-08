@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Регистрация')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container narrow">
+    <div class="card auth-card">
+        <h1>Регистрация</h1>
+        <p class="muted">Создайте аккаунт жителя, это займет минуту.</p>
+
+        <div class="alert alert-error" th:if="${error}" th:text="${error}">Ошибка</div>
+
+        <form class="form" th:action="@{/register}" th:object="${form}" method="post">
+            <div class="field">
+                <label for="username">Имя пользователя</label>
+                <input id="username" type="text" th:field="*{username}" required minlength="3" maxlength="50" autofocus>
+                <small class="hint">От 3 до 50 символов</small>
+            </div>
+            <div class="field">
+                <label for="fullName">Имя и фамилия</label>
+                <input id="fullName" type="text" th:field="*{fullName}" maxlength="100">
+            </div>
+            <div class="field">
+                <label for="email">Электронная почта</label>
+                <input id="email" type="email" th:field="*{email}" required maxlength="100">
+            </div>
+            <div class="field">
+                <label for="password">Пароль</label>
+                <input id="password" type="password" name="password" required minlength="6" maxlength="72">
+                <small class="hint">От 6 символов</small>
+            </div>
+            <div class="field">
+                <label for="confirmPassword">Повторите пароль</label>
+                <input id="confirmPassword" type="password" name="confirmPassword" required minlength="6" maxlength="72">
+            </div>
+            <button class="btn btn-primary btn-block" type="submit">Зарегистрироваться</button>
+        </form>
+
+        <p class="auth-switch">Уже есть аккаунт? <a th:href="@{/login}">Войти</a></p>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/app.js(v=2)}"></script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Датчик')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="page-head">
+        <div>
+            <h1 th:text="${sensor.name}">Датчик</h1>
+            <p class="muted"><span th:text="${sensor.nameType}">Тип</span> &middot;
+                <span class="badge" th:classappend="'badge-' + ${sensor.status.toLowerCase()}" th:text="${sensor.nameStatus}">Активен</span></p>
+        </div>
+        <a class="btn btn-ghost" th:href="@{/sensors}">Все датчики</a>
+    </div>
+
+    <div class="card" th:unless="${#lists.isEmpty(bars)}">
+        <h2 class="card-title">Последние показания</h2>
+        <div class="chart">
+            <div class="col" th:each="b : ${bars}">
+                <div class="bar" th:style="'height:' + ${b.height} + '%'" th:title="${#numbers.formatDecimal(b.value, 1, 2)}"></div>
+                <small th:text="${b.label}">12:00</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" th:if="${session.role == 'ADMIN'}">
+        <h2 class="card-title">Добавить показание</h2>
+        <div class="alert alert-error" th:if="${error}" th:text="${error}">Ошибка</div>
+        <form class="form form-row" th:action="@{/sensors/{id}/data(id=${sensor.id})}" th:object="${reading}" method="post">
+            <div class="field">
+                <label for="value">Значение</label>
+                <input id="value" type="number" step="any" th:field="*{value}" required>
+            </div>
+            <div class="field">
+                <label for="unit">Единица измерения</label>
+                <input id="unit" type="text" th:field="*{unit}" maxlength="20" placeholder="например, dB">
+            </div>
+            <button class="btn btn-primary" type="submit">Сохранить</button>
+        </form>
+    </div>
+
+    <div class="card" th:unless="${#lists.isEmpty(data)}">
+        <h2 class="card-title">Журнал показаний</h2>
+        <div class="table-wrap">
+            <table class="table">
+                <thead><tr><th>Время</th><th>Значение</th><th>Единица</th></tr></thead>
+                <tbody>
+                <tr th:each="d : ${data}">
+                    <td th:text="${#temporals.format(d.recordedAt, 'dd.MM.yyyy HH:mm')}">01.01.2026 12:00</td>
+                    <td th:text="${#numbers.formatDecimal(d.value, 1, 2)}">42,50</td>
+                    <td th:text="${d.unit}">dB</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card empty" th:if="${#lists.isEmpty(data)}"><p>Показаний пока нет.</p></div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/app.js(v=2)}"></script>
+</body>
+</html>
