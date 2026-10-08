@@ -1,13 +1,7 @@
 package ru.isu.cityinfra.frontend.client;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 import ru.isu.cityinfra.frontend.dto.IssueRequestDto;
 import ru.isu.cityinfra.frontend.dto.IssueResponseDto;
 import ru.isu.cityinfra.frontend.dto.IssueStatusUpdateDto;
@@ -15,42 +9,29 @@ import ru.isu.cityinfra.frontend.dto.IssueStatusUpdateDto;
 import java.util.List;
 
 @Component
-@Slf4j
 public class UtilityClient {
 
-    private final RestTemplate restTemplate;
-    private final String utilityUrl;
+    private final ApiGateway api;
+    private final String baseUrl;
 
-    public UtilityClient(RestTemplate restTemplate,
-                          @Value("${services.utility.url}") String utilityUrl) {
-        this.restTemplate = restTemplate;
-        this.utilityUrl = utilityUrl;
+    public UtilityClient(ApiGateway api, @Value("${services.utility.url}") String baseUrl) {
+        this.api = api;
+        this.baseUrl = baseUrl;
     }
 
-    private HttpHeaders authHeaders(String token) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
-        return headers;
-    }
-
-    public List<IssueResponseDto> getAllIssues(String token) {
-        HttpEntity<Void> entity = new HttpEntity<>(authHeaders(token));
-        ResponseEntity<IssueResponseDto[]> response = restTemplate.exchange(
-                utilityUrl + "/issues", HttpMethod.GET, entity, IssueResponseDto[].class);
-        return response.getBody() != null ? List.of(response.getBody()) : List.of();
+    /** Пустые параметры пропускаются. USER получает только свои заявки, ADMIN все. */
+    public List<IssueResponseDto> getIssues(String token, String status, String category,
+                                            String sortBy, String dir) {
+        return api.getList(ApiGateway.uri(baseUrl, "/issues",
+                        "status", status, "type", category, "sortBy", sortBy, "dir", dir),
+                token, IssueResponseDto[].class);
     }
 
     public IssueResponseDto createIssue(String token, IssueRequestDto request) {
-        HttpEntity<IssueRequestDto> entity = new HttpEntity<>(request, authHeaders(token));
-        ResponseEntity<IssueResponseDto> response = restTemplate.exchange(
-                utilityUrl + "/issues", HttpMethod.POST, entity, IssueResponseDto.class);
-        return response.getBody();
+        return api.post(ApiGateway.uri(baseUrl, "/issues"), token, request, IssueResponseDto.class);
     }
 
     public IssueResponseDto updateStatus(String token, Integer issueId, IssueStatusUpdateDto request) {
-        HttpEntity<IssueStatusUpdateDto> entity = new HttpEntity<>(request, authHeaders(token));
-        ResponseEntity<IssueResponseDto> response = restTemplate.exchange(
-                utilityUrl + "/issues/" + issueId, HttpMethod.PUT, entity, IssueResponseDto.class);
-        return response.getBody();
+        return api.put(ApiGateway.uri(baseUrl, "/issues/" + issueId), token, request, IssueResponseDto.class);
     }
 }

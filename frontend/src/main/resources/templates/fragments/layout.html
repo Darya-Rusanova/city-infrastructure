@@ -1,26 +1,52 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head th:fragment="head(title)">
     <meta charset="UTF-8">
-    <title th:text="${title} + ' — City Infrastructure'">City Infrastructure</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' | Умный город'">Умный город</title>
+    <link rel="stylesheet" th:href="@{/css/style.css(v=2)}">
 </head>
 <body>
-<header th:fragment="nav" class="site-header">
+
+<header th:fragment="header" class="site-header">
     <div class="container header-inner">
-        <a th:href="@{/}" class="logo">City Infrastructure</a>
-        <nav>
-            <a th:href="@{/issues}">Заявки ЖКХ</a>
+        <a class="brand" th:href="@{/}"><span class="brand-mark"></span>Умный город</a>
+
+        <nav class="nav" th:if="${session.username} != null">
+            <a th:href="@{/issues}" th:classappend="${currentPath != null and currentPath.startsWith('/issues')} ? 'active'">Заявки</a>
+            <a th:href="@{/transport}" th:classappend="${currentPath != null and currentPath.startsWith('/transport')} ? 'active'">Транспорт</a>
+            <a th:href="@{/parking}" th:classappend="${currentPath != null and currentPath.startsWith('/parking')} ? 'active'">Парковки</a>
+            <a th:href="@{/billing}" th:classappend="${currentPath != null and currentPath.startsWith('/billing')} ? 'active'">Счета</a>
+            <a th:href="@{/sensors}" th:classappend="${currentPath != null and currentPath.startsWith('/sensors')} ? 'active'">Экология</a>
+            <a th:href="@{/notifications}" th:classappend="${currentPath != null and currentPath.startsWith('/notifications')} ? 'active'">Уведомления</a>
+            <a th:if="${session.role == 'ADMIN'}" th:href="@{/users}" th:classappend="${currentPath != null and currentPath.startsWith('/users')} ? 'active'">Пользователи</a>
         </nav>
+
         <div class="user-box" th:if="${session.username} != null">
-            <span th:text="${session.username}">Пользователь</span>
-            <span class="role-badge" th:text="${session.role}">USER</span>
-            <a th:href="@{/logout}" class="btn-link">Выйти</a>
+            <a class="user-link" th:href="@{/profile}" th:title="${session.fullName}">
+                <span class="avatar" th:text="${#strings.toUpperCase(#strings.substring(session.fullName, 0, 1))}">U</span>
+                <span class="user-name" th:text="${session.fullName}">Пользователь</span>
+            </a>
+            <form th:action="@{/logout}" method="post">
+                <button class="btn btn-ghost btn-sm" type="submit">Выйти</button>
+            </form>
         </div>
+
         <div class="user-box" th:unless="${session.username} != null">
-            <a th:href="@{/login}" class="btn-link">Войти</a>
+            <a class="btn btn-ghost btn-sm" th:href="@{/login}">Войти</a>
+            <a class="btn btn-light btn-sm" th:href="@{/register}">Регистрация</a>
         </div>
     </div>
 </header>
+
+<div th:fragment="flash">
+    <div class="alert alert-success" th:if="${success}" th:text="${success}">Готово</div>
+    <div class="alert alert-error" th:if="${error}" th:text="${error}">Ошибка</div>
+</div>
+
+<footer th:fragment="footer" class="site-footer">
+    <div class="container">City Infrastructure Platform &middot; учебный проект</div>
+</footer>
+
 </body>
 </html>

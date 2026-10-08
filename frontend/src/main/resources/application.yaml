@@ -1,18 +1,23 @@
 server:
   port: 8080
+  servlet:
+    session:
+      timeout: 60m
 
 spring:
   application:
     name: frontend
+  web:
+    resources:
+      cache:
+        cachecontrol:
+          no-cache: true
   thymeleaf:
     cache: false
     prefix: classpath:/templates/
     suffix: .html
     mode: HTML
     encoding: UTF-8
-
-jwt:
-  secret: ${JWT_SECRET}
 
 services:
   auth:
@@ -25,6 +30,7 @@ services:
     url: ${ENVIRONMENT_SERVICE_URL:http://environment-service:8080}
   billing:
     url: ${BILLING_SERVICE_URL:http://billing-service:8080}
+    webhook-secret: ${WEBHOOK_SECRET:}
   notification:
     url: ${NOTIFICATION_SERVICE_URL:http://notification-service:8080}
 
