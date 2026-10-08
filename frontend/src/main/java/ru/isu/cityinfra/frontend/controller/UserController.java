@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import ru.isu.cityinfra.frontend.client.AuthClient;
+import ru.isu.cityinfra.frontend.exception.ApiException;
 import ru.isu.cityinfra.frontend.security.Sessions;
 
 @Controller
@@ -24,7 +25,11 @@ public class UserController {
 
     @GetMapping("/users")
     public String users(HttpSession session, Model model) {
-        // права проверяет Auth Service: для обычного пользователя он вернет 403
+        // роль проверяем здесь: Auth Service при отказе может вернуть 401 вместо 403,
+        // и пользователя выбросило бы из аккаунта
+        if (!Sessions.isAdmin(session)) {
+            throw new ApiException(403, "Список пользователей доступен только администратору");
+        }
         model.addAttribute("users", authClient.users(Sessions.token(session)));
         return "users";
     }

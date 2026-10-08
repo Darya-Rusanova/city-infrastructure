@@ -1,55 +1,82 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('Заявки ЖКХ')}"></head>
 <body>
-<div th:replace="~{fragments/layout :: nav}"></div>
+<header th:replace="~{fragments/layout :: header}"></header>
 
 <main class="container">
-    <div class="page-header">
-        <h1>Заявки ЖКХ</h1>
-        <a th:href="@{/issues/new}" class="btn-primary">+ Новая заявка</a>
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="page-head">
+        <div>
+            <h1>Заявки ЖКХ</h1>
+            <p class="muted" th:text="${session.role == 'ADMIN'} ? 'Все заявки жителей. Меняйте статус по мере выполнения работ.' : 'Ваши обращения в коммунальные службы.'">Описание</p>
+        </div>
+        <a class="btn btn-primary" th:href="@{/issues/new}">Новая заявка</a>
     </div>
 
-    <p class="error" th:if="${error}" th:text="${error}"></p>
+    <form class="filters card" method="get" th:action="@{/issues}">
+        <select name="status" aria-label="Статус">
+            <option value="">Все статусы</option>
+            <option th:each="s : ${statuses}" th:value="${s.name()}" th:text="${s.displayName}" th:selected="${s.name() == selectedStatus}"></option>
+        </select>
+        <select name="category" aria-label="Категория">
+            <option value="">Все категории</option>
+            <option th:each="c : ${categories}" th:value="${c.name()}" th:text="${c.displayName}" th:selected="${c.name() == selectedCategory}"></option>
+        </select>
+        <select name="sort" aria-label="Сортировка">
+            <option value="new" th:selected="${selectedSort == 'new'}">Сначала новые</option>
+            <option value="old" th:selected="${selectedSort == 'old'}">Сначала старые</option>
+        </select>
+        <button class="btn btn-ghost" type="submit">Применить</button>
+        <a class="btn btn-link" th:href="@{/issues}">Сбросить</a>
+    </form>
 
-    <table class="data-table" th:if="${!issues.isEmpty()}">
-        <thead>
-        <tr>
-            <th>№</th>
-            <th>Категория</th>
-            <th>Адрес</th>
-            <th>Описание</th>
-            <th>Статус</th>
-            <th>Создана</th>
-            <th th:if="${role == 'ADMIN'}">Действие</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="issue : ${issues}">
-            <td th:text="${issue.id}">1</td>
-            <td th:text="${issue.nameCategory}">Водоснабжение</td>
-            <td th:text="${issue.address}">ул. Ленина, 15</td>
-            <td th:text="${issue.description}">Описание</td>
-            <td>
-                <span class="status-badge" th:text="${issue.nameStatus}">Новая</span>
-            </td>
-            <td th:text="${#temporals.format(issue.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2026</td>
-            <td th:if="${role == 'ADMIN'}">
-                <form th:action="@{/issues/{id}/status(id=${issue.id})}" method="post" class="inline-form">
-                    <select name="status">
-                        <option th:each="s : ${statuses}"
-                                th:value="${s}"
-                                th:text="${s.displayName}"
-                                th:selected="${s == issue.status}"></option>
-                    </select>
-                    <button type="submit" class="btn-small">Сохранить</button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+    <div class="card" th:unless="${#lists.isEmpty(issues)}">
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>№</th>
+                    <th th:if="${session.role == 'ADMIN'}">Автор</th>
+                    <th>Категория</th>
+                    <th>Адрес</th>
+                    <th>Описание</th>
+                    <th>Статус</th>
+                    <th>Создана</th>
+                    <th th:if="${session.role == 'ADMIN'}">Действие</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="issue : ${issues}">
+                    <td th:text="${issue.id}">1</td>
+                    <td th:if="${session.role == 'ADMIN'}" th:text="${issue.userId}">2</td>
+                    <td th:text="${issue.nameCategory}">Водоснабжение</td>
+                    <td th:text="${issue.address}">ул. Ленина, 15</td>
+                    <td th:text="${#strings.abbreviate(issue.description, 90)}" th:title="${issue.description}">Описание</td>
+                    <td><span class="badge" th:classappend="'badge-' + ${issue.status.name().toLowerCase()}" th:text="${issue.nameStatus}">Новая</span></td>
+                    <td th:text="${#temporals.format(issue.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2026</td>
+                    <td th:if="${session.role == 'ADMIN'}">
+                        <form class="inline-form" th:action="@{/issues/{id}/status(id=${issue.id})}" method="post">
+                            <select name="status">
+                                <option th:each="s : ${statuses}" th:value="${s.name()}" th:text="${s.displayName}" th:selected="${s == issue.status}"></option>
+                            </select>
+                            <button class="btn btn-primary btn-sm" type="submit">Сохранить</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    <p th:if="${issues.isEmpty()}" class="empty-state">Заявок пока нет.</p>
+    <div class="card empty" th:if="${#lists.isEmpty(issues)}">
+        <p>Заявок не найдено.</p>
+        <a class="btn btn-primary" th:href="@{/issues/new}">Создать заявку</a>
+    </div>
 </main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/app.js(v=2)}"></script>
 </body>
 </html>
