@@ -8,6 +8,7 @@ import ru.isu.cityinfra.transport.dto.ParkingResponseDto;
 import ru.isu.cityinfra.transport.dto.ReservationRequestDto;
 import ru.isu.cityinfra.transport.dto.ReservationResponseDto;
 import ru.isu.cityinfra.transport.enums.ReservationStatus;
+import ru.isu.cityinfra.transport.exception.BadRequestException;
 import ru.isu.cityinfra.transport.exception.ConflictException;
 import ru.isu.cityinfra.transport.exception.NotFoundException;
 import ru.isu.cityinfra.transport.model.ParkingLot;
@@ -29,11 +30,11 @@ public class ReservationService {
         LocalDateTime start = request.getStartTime();
         LocalDateTime end = request.getEndTime();
         log.info("Попытка бронирования слота {}-{}",start,end);
-        if (start.isAfter(end)){
+        if (!end.isAfter(start)){
             log.error("Ошибка: время начала позже времени конца {}-{}",start,end);
-            throw new ConflictException("Время начала должно быть раньше конца");
+            throw new BadRequestException("Время начала должно быть раньше конца");
         }
-        ParkingLot parkingLot = parkingRepository.findById(parkingLotId).orElse(null);
+        ParkingLot parkingLot = parkingRepository.findByIdForUpdate(parkingLotId).orElse(null);
         if (parkingLot==null){
             log.error("Ошибка: парковки с id={} не существует",parkingLotId);
             throw new NotFoundException("Парковки c id="+parkingLotId+" не существует");
