@@ -19,7 +19,7 @@ public class RegisterRequestDto {
     private String email;
 
     @NotBlank(message = "Укажите пароль")
-    @Size(min = 6, max = 100, message = "Пароль от 6 до 100 символов")
+    @Size(min = 6, max = 70, message = "Пароль от 6 до 70 символов")
     private String password;
 
     @Size(max = 100, message = "ФИО слишком длинное")
