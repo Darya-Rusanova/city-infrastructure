@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Экомониторинг')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="page-head">
+        <div><h1>Экомониторинг</h1><p class="muted">Показания городских датчиков.</p></div>
+    </div>
+
+    <form class="filters card" method="get" th:action="@{/sensors}">
+        <select name="type" aria-label="Тип">
+            <option value="">Все типы</option>
+            <option th:each="o : ${sensorTypes}" th:value="${o.key}" th:text="${o.value}" th:selected="${o.key == selectedType}"></option>
+        </select>
+        <select name="status" aria-label="Статус">
+            <option value="">Все статусы</option>
+            <option th:each="o : ${sensorStatuses}" th:value="${o.key}" th:text="${o.value}" th:selected="${o.key == selectedStatus}"></option>
+        </select>
+        <button class="btn btn-ghost" type="submit">Применить</button>
+        <a class="btn btn-link" th:href="@{/sensors}">Сбросить</a>
+    </form>
+
+    <div class="grid grid-cards" th:unless="${#lists.isEmpty(sensors)}">
+        <div class="card sensor-card" th:each="s : ${sensors}">
+            <div class="card-top">
+                <h3 th:text="${s.name}">Датчик</h3>
+                <span class="badge" th:classappend="'badge-' + ${s.status.toLowerCase()}" th:text="${s.nameStatus}">Активен</span>
+            </div>
+            <p class="muted" th:text="${s.nameType}">Качество воздуха</p>
+            <div class="card-actions">
+                <a class="btn btn-primary btn-sm" th:href="@{/sensors/{id}(id=${s.id})}">Показания</a>
+                <a class="btn btn-link btn-sm" target="_blank" rel="noopener" th:href="@{https://www.openstreetmap.org/(mlat=${s.latitude},mlon=${s.longitude},zoom=16)}">На карте</a>
+            </div>
+        </div>
+    </div>
+    <div class="card empty" th:if="${#lists.isEmpty(sensors)}"><p>Датчики не найдены.</p></div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/app.js(v=2)}"></script>
+</body>
+</html>

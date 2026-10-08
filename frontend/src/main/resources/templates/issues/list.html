@@ -39,7 +39,7 @@
                     <select name="status">
                         <option th:each="s : ${statuses}"
                                 th:value="${s}"
-                                th:text="${s}"
+                                th:text="${s.displayName}"
                                 th:selected="${s == issue.status}"></option>
                     </select>
                     <button type="submit" class="btn-small">Сохранить</button>
