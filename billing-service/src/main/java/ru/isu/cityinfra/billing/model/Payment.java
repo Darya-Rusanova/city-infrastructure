@@ -29,7 +29,7 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private PaymentStatus status = PaymentStatus.PENDING;
-    @Column(name = "transaction_ref", length = 100)
+    @Column(name = "transaction_ref", length = 100, unique = true)
     private String transactionRef;
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();

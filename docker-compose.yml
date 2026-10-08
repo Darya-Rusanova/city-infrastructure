@@ -109,6 +109,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: root
       JWT_SECRET: ${JWT_SECRET}
       NOTIFICATION_SERVICE_URL: http://notification-service:8080
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET}
     depends_on:
       - billing-db
 

@@ -9,6 +9,9 @@ import ru.isu.cityinfra.billing.dto.PaymentRequestDto;
 import ru.isu.cityinfra.billing.dto.PaymentResponseDto;
 import ru.isu.cityinfra.billing.dto.WebhookRequestDto;
 import ru.isu.cityinfra.billing.service.PaymentService;
+import org.springframework.beans.factory.annotation.Value;
+
+import ru.isu.cityinfra.billing.exception.UnauthorizedException;
 
 @RestController
 @RequestMapping("/payments")
@@ -16,6 +19,9 @@ public class PaymentController {
 
     @Autowired
     private PaymentService paymentService;
+
+    @Value("${webhook.secret:}")
+    private String webhookSecret;
 
     @PostMapping
     public ResponseEntity<PaymentResponseDto> createPayment(
@@ -30,7 +36,12 @@ public class PaymentController {
 
     @PostMapping("/webhook/success")
     public ResponseEntity<PaymentResponseDto> webhookSuccess(
+            @RequestHeader(value = "X-Webhook-Secret", required = false) String secret,
             @Valid @RequestBody WebhookRequestDto request) {
+        if (webhookSecret != null && !webhookSecret.isBlank()
+                && !webhookSecret.equals(secret)) {
+            throw new UnauthorizedException("Неверный секрет webhook");
+        }
         return ResponseEntity.ok(paymentService.handleWebhook(request));
     }
 }
