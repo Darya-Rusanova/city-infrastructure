@@ -52,6 +52,12 @@ public class SensorService {
         sensorRepository.findById(sensorId)
                 .orElseThrow(() -> new NotFoundException("Датчик с id=" + sensorId + " не найден"));
 
+        if ((from == null) != (to == null)) {
+            throw new ConflictException("Укажите обе границы интервала или ни одной");
+        }
+        if (from != null && from.isAfter(to)) {
+            throw new ConflictException("Начало интервала позже конца");
+        }
         List<SensorData> data;
         if (from != null && to != null) {
             data = sensorDataRepository
@@ -66,13 +72,13 @@ public class SensorService {
 
     @Transactional
     public SensorDataResponseDto addData(SensorDataRequestDto request) {
-        log.info("Запись показания: sensorId={}, value={}", request.getSensorId(), request.getValue());
+        log.info("Запись показания: sensorId={}, value={}",
+                request.getSensorId(), request.getValue());
         Sensor sensor = sensorRepository.findById(request.getSensorId())
                 .orElseThrow(() -> new NotFoundException(
                         "Датчик с id=" + request.getSensorId() + " не найден"));
-        if (sensor.getStatus() == SensorStatus.INACTIVE) {
-            log.warn("Датчик id={} неактивен, запись отклонена", sensor.getId());
-            throw new ConflictException("Датчик неактивен, запись невозможна");
+        if (sensor.getStatus() != SensorStatus.ACTIVE) {
+            throw new ConflictException("Датчик неактивен или на обслуживании, запись невозможна");
         }
         SensorData data = new SensorData();
         data.setSensorId(sensor.getId());

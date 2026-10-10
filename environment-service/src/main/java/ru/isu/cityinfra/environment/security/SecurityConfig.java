@@ -31,6 +31,7 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers(HttpMethod.GET, "/sensors/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/sensors/data").hasRole("ADMIN")
+                        .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(e -> e
