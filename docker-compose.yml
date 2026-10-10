@@ -132,6 +132,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: root
       JWT_SECRET: ${JWT_SECRET:?Не задан JWT_SECRET в файле .env}
       NOTIFICATION_SERVICE_URL: http://notification-service:8080
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET}
       TZ: Asia/Irkutsk
     depends_on:
       billing-db:

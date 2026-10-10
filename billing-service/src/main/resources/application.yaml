@@ -21,6 +21,9 @@ spring:
 jwt:
   secret: ${JWT_SECRET}
 
+webhook:
+  secret: ${WEBHOOK_SECRET:}
+
 notification:
   service-url: ${NOTIFICATION_SERVICE_URL:http://notification-service:8080}
 

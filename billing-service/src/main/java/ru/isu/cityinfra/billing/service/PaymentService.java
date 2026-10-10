@@ -47,6 +47,9 @@ public class PaymentService {
         if (invoice.getStatus() == InvoiceStatus.PAID) {
             throw new ConflictException("Счет уже оплачен");
         }
+        if (paymentRepository.existsByInvoiceIdAndStatus(invoice.getId(), PaymentStatus.PENDING)) {
+            throw new ConflictException("По этому счету уже есть платеж в обработке");
+}
         if (invoice.getAmount().compareTo(request.getAmount()) != 0) {
             throw new ConflictException("Сумма платежа не совпадает с суммой счета");
         }
@@ -79,12 +82,25 @@ public class PaymentService {
             throw new ConflictException("Платеж уже завершился с ошибкой");
         }
 
+        if (!"SUCCESS".equals(request.getStatus())) {
+            payment.setStatus(PaymentStatus.FAILED);
+            paymentRepository.save(payment);
+            log.warn("Платеж id={} завершился со статусом {}", payment.getId(), request.getStatus());
+            return toDto(payment);
+        }
+
         payment.setStatus(PaymentStatus.SUCCESS);
         paymentRepository.save(payment);
 
         Invoice invoice = invoiceRepository.findById(payment.getInvoiceId())
                 .orElseThrow(() -> new NotFoundException(
                         "Счет с id=" + payment.getInvoiceId() + " не найден"));
+
+        if (invoice.getStatus() == InvoiceStatus.PAID) {
+            log.warn("Счет id={} уже оплачен, webhook игнорируется", invoice.getId());
+            return toDto(payment);
+        }
+
         invoice.setStatus(InvoiceStatus.PAID);
         invoiceRepository.save(invoice);
         log.info("Платеж id={} успешно проведен, счет id={} оплачен",
