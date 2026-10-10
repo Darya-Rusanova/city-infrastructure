@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Новая заявка')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container narrow">
+    <div class="page-head"><div><h1>Новая заявка</h1><p class="muted">Опишите проблему, и мы передадим ее в службу.</p></div></div>
+
+    <div class="card">
+        <div class="alert alert-error" th:if="${error}" th:text="${error}">Ошибка</div>
+
+        <form class="form" th:action="@{/issues}" th:object="${issueRequest}" method="post">
+            <div class="field">
+                <label for="category">Категория</label>
+                <select id="category" th:field="*{category}">
+                    <option th:each="c : ${categories}" th:value="${c}" th:text="${c.displayName}"></option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="address">Адрес</label>
+                <input id="address" type="text" th:field="*{address}" required maxlength="200" placeholder="ул. Ленина, 15">
+            </div>
+            <div class="field">
+                <label for="description">Описание проблемы</label>
+                <textarea id="description" th:field="*{description}" required rows="5" maxlength="2000" placeholder="Что произошло?"></textarea>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Отправить заявку</button>
+                <a class="btn btn-link" th:href="@{/issues}">Отмена</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/app.js(v=2)}"></script>
+</body>
+</html>

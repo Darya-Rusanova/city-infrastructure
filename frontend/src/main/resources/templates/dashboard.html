@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Главная')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="page-head">
+        <div>
+            <h1>Здравствуйте, <span th:text="${session.fullName}">Имя</span></h1>
+            <p class="muted">Роль: <span th:text="${session.roleName}">Пользователь</span></p>
+        </div>
+    </div>
+
+    <div class="grid grid-stats">
+        <a class="card stat" th:href="@{/issues}">
+            <span class="stat-value" th:text="${issuesCount} ?: '-'">0</span>
+            <span class="stat-label" th:text="${session.role == 'ADMIN'} ? 'Заявок всего' : 'Ваши заявки'">Заявки</span>
+        </a>
+        <a class="card stat" th:href="@{/parking}">
+            <span class="stat-value" th:text="${freeSpots} ?: '-'">0</span>
+            <span class="stat-label">Свободных парковочных мест</span>
+        </a>
+        <a class="card stat" th:href="@{/billing}">
+            <span class="stat-value" th:text="${unpaidCount} ?: '-'">0</span>
+            <span class="stat-label">Неоплаченных счетов</span>
+        </a>
+        <a class="card stat" th:href="@{/sensors}">
+            <span class="stat-value" th:text="${activeSensors} ?: '-'">0</span>
+            <span class="stat-label">Активных датчиков</span>
+        </a>
+        <a class="card stat" th:href="@{/notifications}">
+            <span class="stat-value" th:text="${notificationsCount} ?: '-'">0</span>
+            <span class="stat-label">Уведомлений</span>
+        </a>
+    </div>
+
+    <h2 class="section-title">Быстрые действия</h2>
+    <div class="actions">
+        <a class="btn btn-primary" th:href="@{/issues/new}">Подать заявку</a>
+        <a class="btn btn-ghost" th:href="@{/transport}">Посмотреть транспорт</a>
+        <a class="btn btn-ghost" th:href="@{/parking}">Найти парковку</a>
+        <a class="btn btn-ghost" th:href="@{/billing}">Оплатить счет</a>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/app.js(v=2)}"></script>
+</body>
+</html>

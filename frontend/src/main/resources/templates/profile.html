@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Профиль')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container narrow">
+    <div class="page-head"><div><h1>Профиль</h1></div></div>
+    <div class="card profile">
+        <div class="profile-head">
+            <span class="avatar avatar-lg" th:text="${#strings.toUpperCase(#strings.substring(session.fullName, 0, 1))}">U</span>
+            <div>
+                <h2 th:text="${session.fullName}">Имя</h2>
+                <span class="badge badge-active" th:text="${user.nameRole}">Пользователь</span>
+            </div>
+        </div>
+        <dl class="details">
+            <dt>Имя пользователя</dt><dd th:text="${user.username}">user1</dd>
+            <dt>Электронная почта</dt><dd th:text="${user.email}">user@example.com</dd>
+            <dt>Номер пользователя</dt><dd th:text="${user.id}">1</dd>
+            <dt>Зарегистрирован</dt><dd th:text="${#temporals.format(user.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2026</dd>
+        </dl>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/app.js(v=2)}"></script>
+</body>
+</html>
