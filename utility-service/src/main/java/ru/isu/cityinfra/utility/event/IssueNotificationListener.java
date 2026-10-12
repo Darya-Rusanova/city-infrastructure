@@ -6,11 +6,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import ru.isu.cityinfra.utility.client.NotificationClient;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class IssueNotificationListener {
+    @Autowired
     private NotificationClient notificationClient;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
