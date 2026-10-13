@@ -34,10 +34,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/notifications").permitAll()
                         // GET /notifications/my - уведомления текущего пользователя (для фронтенда)
                         .requestMatchers(HttpMethod.GET, "/notifications/my").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )
-                .exceptionHandling(e -> e.authenticationEntryPoint(
-                        new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                .exceptionHandling(e -> e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                .accessDeniedHandler((request, response, ex) ->
+                        response.sendError(HttpStatus.FORBIDDEN.value(), "Forbidden")))
                 .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
