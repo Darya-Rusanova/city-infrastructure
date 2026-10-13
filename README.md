@@ -26,10 +26,10 @@
 
 | Участник | Зона ответственности |
 |---|---|
-| **Дарья** | Utility Service + Transport Service |
-| **Ксения** | Frontend + Notification Service |
-| **Ульяна** | Identity & Auth Service |
-| **Александра** | Billing & Payment Service + Environment Service |
+| **Русанова Дарья** | Utility Service + Transport Service |
+| **Бойченко Ксения** | Frontend + Notification Service |
+| **Яманова Ульяна** | Identity & Auth Service |
+| **Агеева Александра** | Billing & Payment Service + Environment Service |
 
 ## Стек технологий
 
@@ -114,19 +114,23 @@
 ### Установка
 
 **1. Клонировать репозиторий:**
-
+ 
 ```bash
 git clone https://github.com/Darya-Rusanova/city-infrastructure.git
 cd city-infrastructure
+```
+ 
+**2. Создать файл `.env`:**
+ 
 ```bash
 cp .env.example .env
 ```
-
-Вставить `JWT_SECRET` и `WEBHOOK_SECRET` в .env:
-
+ 
+Задать в `.env` два секрета:
+ 
 ```
 JWT_SECRET=ваш-секрет-минимум-32-символа
-WEBHOOK_SECRET=ваш-секрет-для-webhook-датчиков
+WEBHOOK_SECRET=ваш-секрет-для-webhook-платежей
 ```
 
 **3. Запустить всё:**
@@ -142,6 +146,19 @@ http://localhost:8080
 ```
 
 **Первый запуск** — 5–10 минут.
+
+### Тестовые пользователи
+ 
+Создаются автоматически при первом запуске Auth Service:
+ 
+| Логин | Пароль | Роль |
+|---|---|---|
+| `admin` | `admin123` | ADMIN |
+| `user1` | `user123` | USER |
+| `user2` | `user123` | USER |
+
+ 
+Это демонстрационные учётные данные для учебного проекта.
 
 ## Полный список эндпоинтов
 
