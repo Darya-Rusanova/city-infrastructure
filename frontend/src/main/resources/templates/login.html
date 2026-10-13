@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Вход')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container narrow">
+    <div class="card auth-card">
+        <h1>Вход</h1>
+        <p class="muted">Войдите, чтобы работать с городскими сервисами.</p>
+
+        <div class="alert alert-info" th:if="${param.expired}">Сессия истекла, войдите заново.</div>
+        <div class="alert alert-info" th:if="${param.logout}">Вы вышли из системы.</div>
+        <div class="alert alert-error" th:if="${error}" th:text="${error}">Ошибка</div>
+
+        <form class="form" th:action="@{/login}" th:object="${form}" method="post">
+            <div class="field">
+                <label for="username">Имя пользователя</label>
+                <input id="username" type="text" th:field="*{username}" required autofocus>
+            </div>
+            <div class="field">
+                <label for="password">Пароль</label>
+                <input id="password" type="password" name="password" required>
+            </div>
+            <button class="btn btn-primary btn-block" type="submit">Войти</button>
+        </form>
+
+        <p class="auth-switch">Нет аккаунта? <a th:href="@{/register}">Зарегистрируйтесь</a></p>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/app.js(v=2)}"></script>
+</body>
+</html>

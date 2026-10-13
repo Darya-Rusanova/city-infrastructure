@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Парковки')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="page-head">
+        <div><h1>Парковки</h1><p class="muted">Свободные места и бронирование.</p></div>
+    </div>
+
+    <form class="filters card" method="get" th:action="@{/parking}">
+        <label class="check"><input type="checkbox" name="available" value="true" th:checked="${onlyAvailable}"> Только со свободными местами</label>
+        <button class="btn btn-ghost" type="submit">Применить</button>
+    </form>
+
+    <div class="grid grid-cards" th:unless="${#lists.isEmpty(parkingLots)}">
+        <div class="card parking" th:each="lot : ${parkingLots}"
+             th:with="used=${lot.totalSpots gt 0 ? (lot.totalSpots - lot.availableSpots) * 100 / lot.totalSpots : 0}">
+            <h3 th:text="${lot.name}">Парковка</h3>
+            <p class="spots"><strong th:text="${lot.availableSpots}">10</strong> свободно из <span th:text="${lot.totalSpots}">50</span></p>
+            <div class="meter"><span th:style="'width:' + ${used} + '%'" th:classappend="${used ge 90} ? 'full'"></span></div>
+            <div class="card-actions">
+                <a class="btn btn-primary btn-sm" th:if="${lot.availableSpots gt 0}" th:href="@{/parking/{id}/reserve(id=${lot.id})}">Забронировать</a>
+                <span class="badge badge-inactive" th:unless="${lot.availableSpots gt 0}">Мест нет</span>
+                <a class="btn btn-link btn-sm" target="_blank" rel="noopener" th:href="@{https://www.openstreetmap.org/(mlat=${lot.latitude},mlon=${lot.longitude},zoom=16)}">На карте</a>
+            </div>
+        </div>
+    </div>
+    <div class="card empty" th:if="${#lists.isEmpty(parkingLots)}"><p>Парковки не найдены.</p></div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/app.js(v=2)}"></script>
+</body>
+</html>

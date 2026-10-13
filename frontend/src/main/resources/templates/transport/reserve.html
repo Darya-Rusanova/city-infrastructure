@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Бронирование парковки')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container narrow">
+    <div class="page-head">
+        <div>
+            <h1>Бронирование</h1>
+            <p class="muted" th:text="${parking.name}">Парковка</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <p class="spots"><strong th:text="${parking.availableSpots}">10</strong> свободно из <span th:text="${parking.totalSpots}">50</span></p>
+        <div class="alert alert-error" th:if="${error}" th:text="${error}">Ошибка</div>
+
+        <form class="form" th:action="@{/parking/{id}/reserve(id=${parking.id})}" th:object="${reservation}" method="post">
+            <div class="field">
+                <label for="startTime">Начало</label>
+                <input id="startTime" type="datetime-local" th:field="*{startTime}" th:min="${minTime}" required>
+            </div>
+            <div class="field">
+                <label for="endTime">Окончание</label>
+                <input id="endTime" type="datetime-local" th:field="*{endTime}" th:min="${minTime}" required>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Забронировать</button>
+                <a class="btn btn-link" th:href="@{/parking}">Отмена</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/app.js(v=2)}"></script>
+</body>
+</html>

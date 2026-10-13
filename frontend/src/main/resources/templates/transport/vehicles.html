@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Транспорт')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="page-head">
+        <div><h1>Городской транспорт</h1><p class="muted">Текущее положение автобусов, трамваев и такси.</p></div>
+    </div>
+
+    <form class="filters card" method="get" th:action="@{/transport}">
+        <select name="type" aria-label="Тип">
+            <option value="">Все виды</option>
+            <option th:each="o : ${vehicleTypes}" th:value="${o.key}" th:text="${o.value}" th:selected="${o.key == selectedType}"></option>
+        </select>
+        <select name="status" aria-label="Статус">
+            <option value="">Все статусы</option>
+            <option th:each="o : ${vehicleStatuses}" th:value="${o.key}" th:text="${o.value}" th:selected="${o.key == selectedStatus}"></option>
+        </select>
+        <button class="btn btn-ghost" type="submit">Применить</button>
+        <a class="btn btn-link" th:href="@{/transport}">Сбросить</a>
+    </form>
+
+    <div class="card" th:unless="${#lists.isEmpty(vehicles)}">
+        <div class="table-wrap">
+            <table class="table">
+                <thead><tr><th>№</th><th>Вид</th><th>Статус</th><th>Координаты</th><th>Карта</th><th>Обновлено</th></tr></thead>
+                <tbody>
+                <tr th:each="v : ${vehicles}">
+                    <td th:text="${v.id}">1</td>
+                    <td th:text="${v.typeName}">Автобус</td>
+                    <td><span class="badge" th:classappend="'badge-' + ${v.status.toLowerCase()}" th:text="${v.statusName}">Активен</span></td>
+                    <td th:text="${v.latitude} + ', ' + ${v.longitude}">52.28, 104.28</td>
+                    <td><a target="_blank" rel="noopener" th:href="@{https://www.openstreetmap.org/(mlat=${v.latitude},mlon=${v.longitude},zoom=16)}">Открыть</a></td>
+                    <td th:text="${#temporals.format(v.updatedAt, 'dd.MM.yyyy HH:mm')}">01.01.2026</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card empty" th:if="${#lists.isEmpty(vehicles)}"><p>Транспорт по выбранным условиям не найден.</p></div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/app.js(v=2)}"></script>
+</body>
+</html>

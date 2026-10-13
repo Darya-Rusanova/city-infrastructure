@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Главная')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main>
+    <section class="hero">
+        <div class="container">
+            <h1>Умный город в одном окне</h1>
+            <p>Подавайте заявки в коммунальные службы, находите транспорт и парковки, оплачивайте счета и следите за экологией города.</p>
+            <div class="hero-actions">
+                <a class="btn btn-light" th:href="@{/login}">Войти</a>
+                <a class="btn btn-outline" th:href="@{/register}">Создать аккаунт</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="container section">
+        <div class="grid grid-cards">
+            <div class="card feature"><span class="feature-dot dot-blue"></span><h3>Заявки ЖКХ</h3><p>Сообщите о проблеме во дворе или на дороге и следите за статусом работ.</p></div>
+            <div class="card feature"><span class="feature-dot dot-green"></span><h3>Транспорт и парковки</h3><p>Где сейчас автобусы и трамваи, сколько мест свободно на парковках, бронирование.</p></div>
+            <div class="card feature"><span class="feature-dot dot-orange"></span><h3>Счета и оплата</h3><p>Все начисления в одном месте и быстрая оплата.</p></div>
+            <div class="card feature"><span class="feature-dot dot-teal"></span><h3>Экомониторинг</h3><p>Качество воздуха, шум и температура по данным городских датчиков.</p></div>
+            <div class="card feature"><span class="feature-dot dot-violet"></span><h3>Уведомления</h3><p>Сообщения о смене статуса заявок и оплате счетов.</p></div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/app.js(v=2)}"></script>
+</body>
+</html>
