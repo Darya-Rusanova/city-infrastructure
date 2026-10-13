@@ -39,50 +39,6 @@
 - **Frontend:** Thymeleaf, HTML, CSS, JS
 - **Инфраструктура:** Docker, Docker Compose
 - **Сборка:** Maven
-
-## Демонстрация
-
-### Регистрация
-
-![Регистрация](docs/screenshots/register.png)
-
-### Заявки ЖКХ
-
-![Заявки](docs/screenshots/issues.png)
-
-### Транспорт
-
-![Транспорт](docs/screenshots/transport.png)
-
-### Парковки
-
-![Парковки](docs/screenshots/parking.png)
-
-### Счета и оплата
-
-![Счета](docs/screenshots/billing.png)
-
-### Датчики экомониторинга
-
-![Датчики](docs/screenshots/environment.png)
-
-### Уведомления
-
-![Уведомления](docs/screenshots/notifications.png)
-
-### Роль ADMIN — заявки
-
-![ADMIN заявки](docs/screenshots/admin-issues.png)
-
-### Роль ADMIN — пользователи
-
-![ADMIN пользователи](docs/screenshots/admin-users.png)
-
-### Роль ADMIN — экомониторинг
-
-![ADMIN экомониторинг](docs/screenshots/admin-environment.png)
-
-
 **Внутри Docker-сети** все сервисы слушают порт `8080` и обращаются друг к другу по имени, например `http://utility-service:8080`.
 
 **Межсервисные вызовы:**
@@ -210,3 +166,47 @@ http://localhost:8080
 |---|---|---|---|
 | `POST` | `/notifications` | внутренний | Создание уведомления (вызывается из других сервисов) |
 | `GET` | `/notifications/my` | USER, ADMIN | Уведомления текущего пользователя |
+
+
+## Демонстрация
+
+### Регистрация
+
+![Регистрация](docs/screenshots/register.png)
+
+### Заявки ЖКХ
+
+![Заявки](docs/screenshots/issues.png)
+
+### Транспорт
+
+![Транспорт](docs/screenshots/transport.png)
+
+### Парковки
+
+![Парковки](docs/screenshots/parking.png)
+
+### Счета и оплата
+
+![Счета](docs/screenshots/billing.png)
+
+### Датчики экомониторинга
+
+![Датчики](docs/screenshots/environment.png)
+
+### Уведомления
+
+![Уведомления](docs/screenshots/notifications.png)
+
+### Роль ADMIN — заявки
+
+![ADMIN заявки](docs/screenshots/admin-issues.png)
+
+### Роль ADMIN — пользователи
+
+![ADMIN пользователи](docs/screenshots/admin-users.png)
+
+### Роль ADMIN — экомониторинг
+
+![ADMIN экомониторинг](docs/screenshots/admin-environment.png)
+
