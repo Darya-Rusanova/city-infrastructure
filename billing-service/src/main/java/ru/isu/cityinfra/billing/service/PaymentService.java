@@ -1,9 +1,14 @@
 package ru.isu.cityinfra.billing.service;
 
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.extern.slf4j.Slf4j;
 import ru.isu.cityinfra.billing.client.NotificationClient;
 import ru.isu.cityinfra.billing.dto.PaymentRequestDto;
 import ru.isu.cityinfra.billing.dto.PaymentResponseDto;
@@ -17,9 +22,6 @@ import ru.isu.cityinfra.billing.model.Invoice;
 import ru.isu.cityinfra.billing.model.Payment;
 import ru.isu.cityinfra.billing.repository.InvoiceRepository;
 import ru.isu.cityinfra.billing.repository.PaymentRepository;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -47,9 +49,11 @@ public class PaymentService {
         if (invoice.getStatus() == InvoiceStatus.PAID) {
             throw new ConflictException("Счет уже оплачен");
         }
-        if (paymentRepository.existsByInvoiceIdAndStatus(invoice.getId(), PaymentStatus.PENDING)) {
-            throw new ConflictException("По этому счету уже есть платеж в обработке");
-}
+        Optional<Payment> pending = paymentRepository
+                .findFirstByInvoiceIdAndStatus(invoice.getId(), PaymentStatus.PENDING);
+        if (pending.isPresent()) {
+            return toDto(pending.get());   // тот же transactionRef, платёж можно подтвердить
+        }
         if (invoice.getAmount().compareTo(request.getAmount()) != 0) {
             throw new ConflictException("Сумма платежа не совпадает с суммой счета");
         }
